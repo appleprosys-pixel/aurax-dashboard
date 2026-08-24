@@ -473,3 +473,20 @@ button { font: inherit; }
   .workflow-visual-footer .micro-label { white-space: normal; }
   .workflow-svg-title { font-size: 15px; }
 }
+
+
+/* Live signal layer: packets follow the exact SVG paths after every node activation. */
+.workflow-svg-edge-running { opacity: .96; stroke-width: 2.2; }
+.workflow-svg-packet { filter: drop-shadow(0 0 5px currentColor); pointer-events: none; }
+.workflow-svg-node { cursor: pointer; outline: none; transform-box: fill-box; transform-origin: center; }
+.workflow-svg-node:focus-visible rect { stroke: var(--lime) !important; stroke-width: 2.2; }
+.workflow-svg-node-active rect { filter: drop-shadow(0 0 11px rgba(215,255,66,.26)); }
+.workflow-svg-node-ripple { fill: none; stroke-width: 1.2; opacity: 0; transform-box: fill-box; transform-origin: center; animation: node-ripple 1.5s ease-out infinite; }
+.workflow-svg-dot-active { filter: drop-shadow(0 0 8px currentColor); }
+@keyframes node-ripple { 0% { opacity: .85; transform: scale(.7); } 100% { opacity: 0; transform: scale(2.2); } }
+@keyframes star-twinkle { 0%, 100% { opacity: .25; transform: translate3d(0,0,0) scale(.82); } 45% { opacity: .68; transform: translate3d(.35%, -.25%, 0) scale(1); } 62% { opacity: .36; transform: translate3d(-.2%, .2%, 0) scale(.9); } }
+.hero-grain::before, .chapter-stars::before { content: ""; position: absolute; inset: -5%; pointer-events: none; background-image: radial-gradient(circle at 8% 35%, rgba(114,228,219,.7) 0 1px, transparent 1.7px), radial-gradient(circle at 41% 18%, rgba(215,255,66,.75) 0 1px, transparent 1.8px), radial-gradient(circle at 72% 74%, rgba(191,171,255,.72) 0 1px, transparent 1.7px), radial-gradient(circle at 89% 29%, rgba(255,152,117,.68) 0 1px, transparent 1.6px), radial-gradient(circle at 56% 88%, rgba(255,255,255,.56) 0 1px, transparent 1.6px); animation: star-twinkle 7s ease-in-out infinite; }
+.chapter-stars::before { animation-delay: -2.4s; opacity: .4; }
+@media (prefers-reduced-motion: reduce) {
+  .workflow-svg-packet, .workflow-svg-node-ripple, .workflow-svg-signal-dots circle, .hero-grain, .hero-grain::before, .chapter-stars, .chapter-stars::before { animation: none !important; }
+}
