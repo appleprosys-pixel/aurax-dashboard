@@ -33,6 +33,9 @@ button { font: inherit; }
 @keyframes review-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
 @keyframes star-twinkle { 0%, 100% { opacity: .22; } 50% { opacity: .72; } }
 @keyframes chat-dot { 0%, 100% { opacity: .2; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-2px); } }
+@keyframes globe-spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes globe-spin-reverse { from { transform: translate(-50%, -50%) rotate(360deg); } to { transform: translate(-50%, -50%) rotate(0deg); } }
+@keyframes globe-ping { 0%, 100% { transform: scale(.75); opacity: .42; } 50% { transform: scale(1.45); opacity: 0; } }
 
 .font-display { font-family: var(--font-display); }
 .font-mono { font-family: var(--font-mono); }
@@ -82,6 +85,19 @@ button { font: inherit; }
 .hero-signal-copy { position: relative; z-index: 2; max-width: 310px; padding: 42px 22px 0; }
 .hero-signal-copy h2 { margin: 18px 0 0; color: white; font-family: var(--font-display); font-size: clamp(2.1rem, 4vw, 4rem); font-weight: 400; letter-spacing: -.06em; line-height: .9; }
 .hero-signal-copy p:last-child { margin-top: 15px; color: rgba(255,255,255,.48); font-size: 13px; }
+.moving-globe { position: absolute; top: 55%; right: 5%; height: 295px; width: 345px; }
+.globe-halo { position: absolute; top: 50%; left: 54%; height: 230px; width: 230px; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(215,255,66,.12), transparent 66%); filter: blur(10px); }
+.globe-sphere { position: absolute; top: 50%; left: 54%; height: 220px; width: 220px; transform: translate(-50%, -50%); }
+.globe-sphere svg { height: 100%; width: 100%; animation: globe-spin 34s linear infinite; }
+.globe-orbit { position: absolute; top: 50%; left: 54%; height: 220px; width: 280px; transform: translate(-50%, -50%) rotate(-18deg); border: 1px solid rgba(215,255,66,.26); border-radius: 50%; }
+.globe-orbit-a { animation: globe-spin 18s linear infinite; }
+.globe-orbit-b { height: 184px; width: 310px; transform: translate(-50%, -50%) rotate(65deg); border-color: rgba(113,135,255,.25); animation: globe-spin-reverse 22s linear infinite; }
+.globe-pin { position: absolute; z-index: 4; height: 7px; width: 7px; border-radius: 50%; background: var(--acid); box-shadow: 0 0 0 3px rgba(215,255,66,.12); }
+.globe-pin::after { content: ""; position: absolute; inset: -7px; border: 1px solid rgba(215,255,66,.38); border-radius: 50%; animation: globe-ping 2.2s ease-in-out infinite; }
+.globe-pin-a { top: 30%; left: 35%; }
+.globe-pin-b { top: 65%; right: 16%; background: #ff946e; }
+.globe-pin-c { bottom: 14%; left: 45%; background: #8799ff; }
+.globe-caption { position: absolute; right: 8%; bottom: 8%; left: 17%; display: flex; justify-content: space-between; color: rgba(255,255,255,.28); font-family: var(--font-mono); font-size: 8px; letter-spacing: .14em; }
 .hero-signal-orbit { position: absolute; top: 53%; left: 62%; height: 210px; width: 210px; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; transform: translate(-50%, -50%); }
 .hero-signal-orbit::before, .hero-signal-orbit::after { content: ""; position: absolute; inset: 24px; border: 1px solid rgba(113,135,255,.26); border-radius: 50%; animation: orbit 19s linear infinite; }
 .hero-signal-orbit::after { inset: -15px; border-color: rgba(215,255,66,.18); animation-duration: 31s; animation-direction: reverse; }
@@ -196,6 +212,10 @@ button { font: inherit; }
   .hero-orbit-two { top: 46%; right: -21%; height: 350px; width: 350px; }
   .hero-signal-card { min-height: 380px; transform: none; }
   .hero-signal-card:hover { transform: translateY(-4px); }
+  .moving-globe { top: 57%; right: -7%; height: 230px; width: 285px; }
+  .globe-sphere, .globe-orbit { height: 178px; width: 225px; }
+  .globe-sphere { left: 55%; }
+  .globe-orbit-b { height: 150px; width: 250px; }
   .hero-signal-orbit { top: 55%; left: 68%; height: 165px; width: 165px; }
   .hero-signal-foot { gap: 9px; font-size: 7px; }
   .chip-label { font-size: 10px; }
