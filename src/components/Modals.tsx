@@ -1,461 +1,69 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { BRAND } from "../data/content";
 import { ModalShell, useModal } from "../lib/ui";
-import { sendToTelegram, sendToWhatsApp, line, escapeHtml } from "../lib/telegram";
+import { escapeHtml, line, sendToTelegram, sendToWhatsApp } from "../lib/telegram";
 import { Icon } from "./Icons";
 
-/* ---------- shared field styling (fat) ---------- */
-const inputCls =
-  "w-full min-h-[54px] rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-[15px] font-medium text-white placeholder:font-normal placeholder-white/30 outline-none transition focus:border-violet/60 focus:bg-white/[0.08]";
-
-function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-xs font-medium text-white/55">{label}</span>
-      {children}
-    </label>
-  );
-}
+const inputCls = "w-full min-h-[52px] rounded-xl border border-white/10 bg-white/[.045] px-4 py-3.5 text-[14px] font-medium text-white placeholder:font-normal placeholder:text-white/28 outline-none transition focus:border-[#d7ff42]/55 focus:bg-white/[.07]";
 
 type Result = "idle" | "sending" | "sent" | "error";
+type IntroMode = "problem" | "call" | "demo";
 
-function ResultView({
-  result,
-  error,
-  successTitle,
-  successLines,
-  onClose,
-}: {
-  result: Result;
-  error?: string;
-  successTitle: string;
-  successLines: string[];
-  onClose: () => void;
-}) {
-  if (result === "error") {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="py-6 text-center"
-      >
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-500/15 text-rose-400">
-          <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
-            <path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
-          </svg>
-        </div>
-        <h4 className="font-display mt-5 text-2xl font-semibold text-white">
-          Couldn&apos;t send
-        </h4>
-        <p className="mx-auto mt-2 max-w-sm text-sm text-white/55">
-          Something went wrong reaching us. Please try again, or email{" "}
-          <a className="text-cyan underline-offset-2 hover:underline" href={`mailto:${BRAND.email}`}>
-            {BRAND.email}
-          </a>
-          .
-        </p>
-        <button
-          onClick={onClose}
-          className="mt-6 rounded-full bg-white/10 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/15"
-        >
-          Close
-        </button>
-        {error && <p className="mt-3 font-mono text-[10px] text-white/25">{error}</p>}
-      </motion.div>
-    );
-  }
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.96 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="py-6 text-center"
-    >
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[linear-gradient(135deg,#34d399,#22d3ee)] text-white">
-        <Icon name="check" className="h-8 w-8" />
-      </div>
-      <h4 className="font-display mt-5 text-2xl font-semibold text-white">{successTitle}</h4>
-      {successLines.map((l) => (
-        <p key={l} className="mx-auto mt-2 max-w-sm text-sm text-white/55">
-          {l}
-        </p>
-      ))}
-      <button
-        onClick={onClose}
-        className="mt-6 rounded-full bg-white/10 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/15"
-      >
-        Done
-      </button>
-    </motion.div>
-  );
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  return <label className="block"><span className="mb-2 block font-mono text-[9px] uppercase tracking-[.14em] text-white/45">{label}</span>{children}</label>;
 }
 
-const BUILD_TYPES = [
-  "Conversational agent",
-  "Voice / telephony",
-  "Multi-agent system",
-  "Autonomous outbound",
-  "Custom — not sure yet",
-];
+function ResultView({ result, error, successTitle, successLines, onClose }: { result: Result; error?: string; successTitle: string; successLines: string[]; onClose: () => void }) {
+  if (result === "error") return <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="py-8 text-center"><div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-[#ff946e]/35 text-[#ff946e]"><span className="text-xl">!</span></div><h4 className="mt-5 font-display text-3xl tracking-[-.04em] text-white">Couldn’t send</h4><p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-white/48">Please try again, or reach the team at <a className="text-[#d7ff42]" href={`mailto:${BRAND.email}`}>{BRAND.email}</a>.</p><button type="button" onClick={onClose} className="angled-button angled-button-outline mt-7 px-7">Close</button>{error && <p className="mt-3 font-mono text-[9px] text-white/25">{error}</p>}</motion.div>;
+  return <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="py-8 text-center"><div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#d7ff42] text-[#07080c]"><Icon name="check" className="h-6 w-6" /></div><h4 className="mt-5 font-display text-3xl tracking-[-.04em] text-white">{successTitle}</h4>{successLines.map((item) => <p key={item} className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-white/48">{item}</p>)}<button type="button" onClick={onClose} className="angled-button angled-button-acid mt-7 px-7">Done</button></motion.div>;
+}
 
-/* ---------- Fatter custom dropdown ---------- */
-function FatSelect({
-  value,
-  onChange,
-  options,
-  leadingIcon,
-  accent = "#8b5cf6",
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  options: string[];
-  leadingIcon?: string;
-  accent?: string;
-}) {
+function ModePicker({ mode, onChange }: { mode: IntroMode; onChange: (mode: IntroMode) => void }) {
+  const options: Array<[IntroMode, string, string]> = [["problem", "Tell your problem", "Best first move"], ["call", "Book a call", "Choose a slot"], ["demo", "Call demo", "See a system live"]];
+  return <div className="intro-mode-picker">{options.map(([value, label, detail]) => <button type="button" key={value} onClick={() => onChange(value)} className={`intro-mode ${mode === value ? "intro-mode-active" : ""}`}><span>{label}</span><small>{detail}</small></button>)}</div>;
+}
+
+function SubmitButton({ label, loading }: { label: string; loading: boolean }) {
+  return <button type="submit" disabled={loading} className="angled-button angled-button-acid w-full">{loading ? "Sending…" : label}<Icon name="arrow" className="h-4 w-4" /></button>;
+}
+
+const SLOTS = ["09:00 – 10:00 IST", "11:00 – 12:00 IST", "14:00 – 15:00 IST", "16:00 – 17:00 IST", "18:00 – 19:00 IST"];
+
+function FatSelect({ value, onChange, options }: { value: string; onChange: (value: string) => void; options: string[] }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const onClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    document.addEventListener("mousedown", onClick);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onClick);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className={inputCls + " flex w-full items-center justify-between gap-2 text-left"}
-      >
-        <span className="flex items-center gap-2.5">
-          {leadingIcon && (
-            <span style={{ color: accent }}>
-              <Icon name={leadingIcon} className="h-5 w-5" />
-            </span>
-          )}
-          <span>{value}</span>
-        </span>
-        <motion.span animate={{ rotate: open ? 180 : 0 }} className="text-white/50">
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-            <path d="m6 9 6 6 6-6" />
-          </svg>
-        </motion.span>
-      </button>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.98 }}
-            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-            className="glass-strong absolute z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-xl p-1.5 shadow-2xl"
-          >
-            {options.map((o) => {
-              const active = o === value;
-              return (
-                <button
-                  key={o}
-                  type="button"
-                  onClick={() => {
-                    onChange(o);
-                    setOpen(false);
-                  }}
-                  className={
-                    "flex min-h-[48px] w-full items-center justify-between rounded-lg px-4 text-[15px] font-semibold transition-colors " +
-                    (active
-                      ? "bg-[linear-gradient(110deg,rgba(124,58,237,0.25),rgba(34,211,238,0.18))] text-white"
-                      : "text-white/70 hover:bg-white/8 hover:text-white")
-                  }
-                >
-                  {o}
-                  {active && (
-                    <span style={{ color: accent }}>
-                      <Icon name="check" className="h-4 w-4" />
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+  useEffect(() => { if (!open) return; const close = (event: MouseEvent) => { if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false); }; document.addEventListener("mousedown", close); return () => document.removeEventListener("mousedown", close); }, [open]);
+  return <div ref={ref} className="relative"><button type="button" onClick={() => setOpen((current) => !current)} className={`${inputCls} flex items-center justify-between text-left`}><span>{value}</span><span className="text-white/35">⌄</span></button><AnimatePresence>{open && <motion.div initial={{ opacity: 0, y: -7 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -7 }} className="glass-strong absolute z-50 mt-2 w-full rounded-xl p-1.5 shadow-2xl">{options.map((option) => <button type="button" key={option} onClick={() => { onChange(option); setOpen(false); }} className={`block w-full rounded-lg px-3 py-3 text-left text-sm transition ${option === value ? "bg-white/10 text-white" : "text-white/55 hover:bg-white/[.06] hover:text-white"}`}>{option}</button>)}</motion.div>}</AnimatePresence></div>;
 }
 
-function SubmitButton({
-  children,
-  accent,
-  disabled,
-  loading,
-}: {
-  children: ReactNode;
-  accent: "violet" | "cyan";
-  disabled: boolean;
-  loading: boolean;
-}) {
-  const grad =
-    accent === "violet"
-      ? "bg-[linear-gradient(110deg,#7c3aed,#6366f1)] shadow-[0_10px_36px_-10px_rgba(124,58,237,0.9)]"
-      : "bg-[linear-gradient(110deg,#22d3ee,#6366f1)] shadow-[0_10px_36px_-10px_rgba(34,211,238,0.8)]";
-  return (
-    <button
-      type="submit"
-      disabled={disabled || loading}
-      className={"flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold text-white transition-all enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 " + grad}
-    >
-      {loading ? (
-        <>
-          <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-90" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z" />
-          </svg>
-          Sending…
-        </>
-      ) : (
-        children
-      )}
-    </button>
-  );
-}
-
-/* ---------- Message modal ---------- */
-function MessageModal({ preset, onClose }: { preset: string; onClose: () => void }) {
+function ProblemModal({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
-  const [type, setType] = useState(
-    preset === "custom" ? "Custom — not sure yet" : BUILD_TYPES[0],
-  );
-  const [message, setMessage] = useState("");
+  const [problem, setProblem] = useState("");
   const [result, setResult] = useState<Result>("idle");
   const [error, setError] = useState<string>();
-
-  const canSend = name.trim().length > 1 && message.trim().length > 3;
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!canSend || result === "sending") return;
-    setResult("sending");
-    const text =
-      `📩 <b>New message — Aurax site</b>\n\n` +
-      `${line("👤 Name:", name.trim())}\n` +
-      `${line("🏷 Interest:", type)}\n` +
-      (contact.trim() ? `${line("✉️ Contact:", contact.trim())}\n` : "") +
-      `\n💬 <b>Brief:</b>\n${escapeHtml(message.trim())}`;
-    const [telegramResult, whatsappResult] = await Promise.all([
-      sendToTelegram(text),
-      sendToWhatsApp(text),
-    ]);
-    setError(telegramResult.error ?? whatsappResult.error);
-    setResult(telegramResult.ok || whatsappResult.ok ? "sent" : "error");
-  }
-
-  return (
-    <ModalShell
-      onClose={onClose}
-      title="Send a message"
-      subtitle="Describe the agent or system you want to build — we read every message and reply directly."
-      accent="#22d3ee"
-    >
-      {result === "sent" || result === "error" ? (
-        <ResultView
-          result={result}
-          error={error}
-          successTitle="Message sent! 🚀"
-          successLines={[
-            "Thanks — your message just landed in our inbox. We'll get back to you shortly.",
-            `Prefer email? Reach us at ${BRAND.email}.`,
-          ]}
-          onClose={onClose}
-        />
-      ) : (
-        <form onSubmit={submit} className="space-y-4">
-          <Field label="Your name *">
-            <input
-              className={inputCls}
-              placeholder="e.g. Aarav Mehta"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </Field>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label="Email or phone (optional)">
-              <input
-                className={inputCls}
-                placeholder="How can we reach you?"
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-              />
-            </Field>
-            <Field label="What do you need?">
-              <FatSelect
-                value={type}
-                onChange={setType}
-                options={BUILD_TYPES}
-                leadingIcon="spark"
-                accent="#22d3ee"
-              />
-            </Field>
-          </div>
-          <Field label="Describe your build *">
-            <textarea
-              className={inputCls + " min-h-[120px] resize-y"}
-              placeholder="I want an agent that handles inbound calls, books appointments into my calendar, and follows up by WhatsApp…"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-          </Field>
-          <SubmitButton accent="cyan" disabled={!canSend} loading={result === "sending"}>
-            <Icon name="send" className="h-4 w-4" />
-            Send message
-          </SubmitButton>
-          <p className="text-center text-xs text-white/35">
-            Your message is delivered straight to our team — no third-party clutter.
-          </p>
-        </form>
-      )}
-    </ModalShell>
-  );
+  const canSend = name.trim().length > 1 && problem.trim().length > 3;
+  async function submit(event: FormEvent) { event.preventDefault(); if (!canSend || result === "sending") return; setResult("sending"); const text = `📩 <b>New problem brief — Aurax</b>\n\n${line("Name:", name.trim())}\n${contact.trim() ? line("Contact:", contact.trim()) + "\n" : ""}\n<b>What is slowing the business down?</b>\n${escapeHtml(problem.trim())}`; const [telegram, whatsapp] = await Promise.all([sendToTelegram(text), sendToWhatsApp(text)]); setError(telegram.error ?? whatsapp.error); setResult(telegram.ok || whatsapp.ok ? "sent" : "error"); }
+  return <ModalShell onClose={onClose} title="Tell us the problem" subtitle="You do not need to know which agent you need. Start with the work that keeps stealing time." accent="#d7ff42"><form onSubmit={submit} className="space-y-5"><Field label="Your name *"><input className={inputCls} placeholder="e.g. Aarav Mehta" value={name} onChange={(event) => setName(event.target.value)} /></Field><Field label="Email or phone (optional)"><input className={inputCls} placeholder="Where should we reach you?" value={contact} onChange={(event) => setContact(event.target.value)} /></Field><Field label="What problem are you facing? *"><textarea className={`${inputCls} min-h-[150px] resize-y`} placeholder="Tell us what repeats, breaks, gets missed, or takes too much time…" value={problem} onChange={(event) => setProblem(event.target.value)} /></Field><SubmitButton label="Send the problem" loading={result === "sending"} /><p className="text-center font-mono text-[9px] uppercase tracking-[.12em] text-white/25">We will come back with the system we would build around it.</p></form>{result === "sent" || result === "error" ? <ResultView result={result} error={error} successTitle="Problem received" successLines={["The brief is with the team. We will respond with a clear next move.", `You can also reach ${BRAND.email}.`]} onClose={onClose} /> : null}</ModalShell>;
 }
 
-/* ---------- Call modal ---------- */
-const SLOTS = [
-  "09:00 – 10:00 IST",
-  "11:00 – 12:00 IST",
-  "14:00 – 15:00 IST",
-  "16:00 – 17:00 IST",
-  "18:00 – 19:00 IST",
-];
-
-function CallModal({ preset, onClose }: { preset: string; onClose: () => void }) {
+function IntroModal({ preset, onClose }: { preset: string; onClose: () => void }) {
   const today = new Date().toISOString().split("T")[0];
+  const [mode, setMode] = useState<IntroMode>(preset === "demo" ? "demo" : "call");
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [date, setDate] = useState("");
   const [slot, setSlot] = useState(SLOTS[0]);
-  const [details, setDetails] = useState(preset ? `Interested in: ${preset}` : "");
+  const [details, setDetails] = useState("");
   const [result, setResult] = useState<Result>("idle");
   const [error, setError] = useState<string>();
-
-  const canSend = name.trim().length > 1 && contact.trim().length > 2 && date;
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!canSend || result === "sending") return;
-    setResult("sending");
-    const text =
-      `📅 <b>New build-call request — Aurax</b>\n\n` +
-      `${line("👤 Name:", name.trim())}\n` +
-      `${line("✉️ Contact:", contact.trim())}\n` +
-      `${line("🗓 Date:", date)}\n` +
-      `${line("⏰ Time:", slot)}` +
-      (details.trim() ? `\n${line("📝 Project:", details.trim())}` : "");
-    const [telegramResult, whatsappResult] = await Promise.all([
-      sendToTelegram(text),
-      sendToWhatsApp(text),
-    ]);
-    setError(telegramResult.error ?? whatsappResult.error);
-    setResult(telegramResult.ok || whatsappResult.ok ? "sent" : "error");
-  }
-
-  return (
-    <ModalShell
-      onClose={onClose}
-      title="Schedule a build call"
-      subtitle="Pick a slot that works for you and we'll confirm the appointment."
-      accent="#8b5cf6"
-    >
-      {result === "sent" || result === "error" ? (
-        <ResultView
-          result={result}
-          error={error}
-          successTitle="Slot requested! 📅"
-          successLines={[
-            `Got it — ${date} at ${slot}.`,
-            "We'll confirm your appointment shortly via the contact you shared.",
-          ]}
-          onClose={onClose}
-        />
-      ) : (
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label="Your name *">
-              <input
-                className={inputCls}
-                placeholder="e.g. Sarah Whitman"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </Field>
-            <Field label="Email or phone *">
-              <input
-                className={inputCls}
-                placeholder="Where should we confirm?"
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-              />
-            </Field>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label="Preferred date *">
-              <input
-                type="date"
-                min={today}
-                className={inputCls + " [color-scheme:dark]"}
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </Field>
-            <Field label="Preferred time">
-              <FatSelect
-                value={slot}
-                onChange={setSlot}
-                options={SLOTS}
-                leadingIcon="clock"
-                accent="#8b5cf6"
-              />
-            </Field>
-          </div>
-          <Field label="What do you want to build?">
-            <textarea
-              className={inputCls + " min-h-[90px] resize-y"}
-              placeholder="A short brief — your goals, tools, timeline…"
-              value={details}
-              onChange={(e) => setDetails(e.target.value)}
-            />
-          </Field>
-          <SubmitButton accent="violet" disabled={!canSend} loading={result === "sending"}>
-            <Icon name="calendar" className="h-4 w-4" />
-            Request appointment
-          </SubmitButton>
-          <p className="text-center text-xs text-white/35">
-            We&apos;ll confirm your slot by the contact you share.
-          </p>
-        </form>
-      )}
-    </ModalShell>
-  );
+  const canSend = name.trim().length > 1 && contact.trim().length > 2 && (mode === "call" ? date.length > 0 : details.trim().length > 3);
+  async function submit(event: FormEvent) { event.preventDefault(); if (!canSend || result === "sending") return; setResult("sending"); const label = mode === "call" ? "Build call request" : mode === "problem" ? "Problem brief" : "Call demo request"; const text = `📅 <b>${label} — Aurax</b>\n\n${line("Name:", name.trim())}\n${line("Contact:", contact.trim())}\n${mode === "call" ? `${line("Date:", date)}\n${line("Time:", slot)}\n` : ""}${details.trim() ? `\n<b>Brief:</b>\n${escapeHtml(details.trim())}` : ""}`; const deliveries = mode === "demo" ? [await sendToTelegram(text)] : await Promise.all([sendToTelegram(text), sendToWhatsApp(text)]); const ok = deliveries.some((delivery) => delivery.ok); setError(deliveries.find((delivery) => delivery.error)?.error); setResult(ok ? "sent" : "error"); }
+  return <ModalShell onClose={onClose} title="Make the first move" subtitle="Choose the quickest way to get the right system in motion." accent="#d7ff42"><ModePicker mode={mode} onChange={(next) => { setMode(next); setResult("idle"); }} />{result === "sent" || result === "error" ? <ResultView result={result} error={error} successTitle={mode === "problem" ? "Problem received" : mode === "call" ? "Slot requested" : "Demo requested"} successLines={["Your request has landed with the Aurax team.", "We will confirm the next step by the contact you shared."]} onClose={onClose} /> : <form onSubmit={submit} className="mt-6 space-y-5"><div className="grid gap-4 sm:grid-cols-2"><Field label="Your name *"><input className={inputCls} placeholder="e.g. Sarah Whitman" value={name} onChange={(event) => setName(event.target.value)} /></Field><Field label="Email or phone *"><input className={inputCls} placeholder="Where should we confirm?" value={contact} onChange={(event) => setContact(event.target.value)} /></Field></div>{mode === "call" ? <div className="grid gap-4 sm:grid-cols-2"><Field label="Preferred date *"><input type="date" min={today} className={`${inputCls} [color-scheme:dark]`} value={date} onChange={(event) => setDate(event.target.value)} /></Field><Field label="Preferred time"><FatSelect value={slot} onChange={setSlot} options={SLOTS} /></Field></div> : null}<Field label={mode === "problem" ? "What problem are you facing? *" : mode === "demo" ? "What should the demo show? *" : "What do you want to build? *"}><textarea className={`${inputCls} min-h-[120px] resize-y`} placeholder={mode === "problem" ? "Tell us what repeats, breaks, gets missed, or takes too much time…" : mode === "demo" ? "Tell us what you want to see working…" : "A short brief — your goals, tools, timeline…"} value={details} onChange={(event) => setDetails(event.target.value)} /></Field><SubmitButton label={mode === "problem" ? "Send the problem" : mode === "call" ? "Request the call" : "Request the demo"} loading={result === "sending"} /><p className="text-center font-mono text-[9px] uppercase tracking-[.12em] text-white/25">Your details go to the Aurax operations inbox.</p></form>}</ModalShell>;
 }
 
-/* ---------- Wrapper bound to the modal store ---------- */
 export default function Modals() {
   const { type, preset, close } = useModal();
-  return (
-    <AnimatePresence>
-      {type === "message" && (
-        <MessageModal key="message" preset={preset} onClose={close} />
-      )}
-      {type === "call" && <CallModal key="call" preset={preset} onClose={close} />}
-    </AnimatePresence>
-  );
+  return <AnimatePresence>{type === "message" && <ProblemModal key="problem" onClose={close} />}{type === "call" && <IntroModal key="intro" preset={preset} onClose={close} />}</AnimatePresence>;
 }

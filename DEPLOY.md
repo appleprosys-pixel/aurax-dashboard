@@ -95,10 +95,10 @@ returns a helpful built-in response so the UI remains usable.
 The build-call and message forms continue to deliver to Telegram and now also
 support an optional WhatsApp relay. Set the frontend build variable
 `VITE_WHATSAPP_PROXY` to a secure server-side webhook or WhatsApp Business
-relay that accepts `{ "to": "919123771413", "text": "..." }`. The destination
-is already set in the frontend helper as `+91 91237 71413`. Do not put a
-WhatsApp access token in the browser bundle. The direct WhatsApp link on the
-site remains available even when the relay is not configured.
+relay that accepts `{ "text": "..." }`. Keep the destination number inside
+that server-side relay only. Do not put a WhatsApp access token or personal
+number in the browser bundle. The public site intentionally does not expose a
+direct WhatsApp link.
 
 ---
 

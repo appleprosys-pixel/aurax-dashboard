@@ -69,7 +69,6 @@ export async function sendToWhatsApp(text: string): Promise<SendResult> {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        to: "919123771413",
         text: text.replace(/<[^>]*>/g, ""),
       }),
     });

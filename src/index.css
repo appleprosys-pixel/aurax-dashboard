@@ -171,8 +171,8 @@ button { font: inherit; }
 .review-section .spatial-copy { color: rgba(7,8,12,.55); }
 .review-marquee { overflow: hidden; width: 100%; }
 .review-track { display: flex; width: max-content; gap: 12px; }
-.review-track-forward { animation: review-left 65s linear infinite; }
-.review-track-reverse { animation: review-right 72s linear infinite; }
+.review-track-forward { animation: review-left 112s linear infinite; }
+.review-track-reverse { animation: review-right 126s linear infinite; }
 .review-pill { display: inline-block; max-width: 380px; border: 1px solid rgba(7,8,12,.15); border-radius: 11px 16px 12px 14px; padding: 17px 20px; background: #171a1a; color: rgba(255,255,255,.78); font-size: 13px; line-height: 1.4; }
 .review-pill-light { background: rgba(255,255,255,.28); color: rgba(7,8,12,.66); }
 
@@ -228,3 +228,12 @@ button { font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }
+
+.intro-mode-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 5px; border: 1px solid rgba(255,255,255,.1); border-radius: 15px; background: rgba(255,255,255,.035); }
+.intro-mode { display: flex; min-height: 58px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 5px; border-radius: 10px; padding: 10px 12px; color: rgba(255,255,255,.48); text-align: left; transition: background .25s ease, color .25s ease, transform .25s ease; }
+.intro-mode:hover { color: white; background: rgba(255,255,255,.06); transform: translateY(-1px); }
+.intro-mode span { font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.intro-mode small { color: rgba(255,255,255,.3); font-size: 11px; }
+.intro-mode-active { color: #07080c; background: var(--acid); }
+.intro-mode-active small { color: rgba(7,8,12,.62); }
+@media (max-width: 560px) { .intro-mode-picker { grid-template-columns: 1fr; } .intro-mode { min-height: 48px; } }
