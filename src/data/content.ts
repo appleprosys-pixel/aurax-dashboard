@@ -17,7 +17,6 @@ export const NAV_LINKS = [
   { label: "Systems", href: "#systems" },
   { label: "Agents", href: "#agents" },
   { label: "Reviews", href: "#reviews" },
-  { label: "Pricing", href: "#pricing" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -76,7 +75,7 @@ export const SYSTEMS: System[] = [
   {
     id: "custom",
     icon: "spark",
-    name: "Custom AI Endpoints",
+    name: "Custom Workflow",
     tag: "Build Your Own",
     desc: "Describe the agent or system you need and we'll scope a custom build around your exact workflow, data and stack.",
     accent: "#f59e0b",
