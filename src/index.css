@@ -187,3 +187,36 @@ body {
   .marquee-track:hover,
   .marquee-track-rev:hover { animation-play-state: paused; }
 }
+
+/* ============ AUTOMATION WORKFLOW ============ */
+.workflow-canvas {
+  isolation: isolate;
+}
+.workflow-canvas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.18;
+  background-image: linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+  background-size: 96px 96px;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+.workflow-node-active {
+  animation: workflow-node-pulse 2.4s ease-in-out infinite;
+}
+@keyframes workflow-node-pulse {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@media (max-width: 767px) {
+  .workflow-canvas {
+    min-width: 690px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workflow-node-active,
+  .animate-blink {
+    animation: none !important;
+  }
+}

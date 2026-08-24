@@ -6,6 +6,7 @@ import Hero from "./components/Hero";
 import Marquee from "./components/Marquee";
 import Positioning from "./components/Positioning";
 import Systems from "./components/Systems";
+import AutomationWorkflow from "./components/AutomationWorkflow";
 import TopAgents from "./components/TopAgents";
 import Stats from "./components/Stats";
 import Reviews from "./components/Reviews";
@@ -26,6 +27,7 @@ export default function App() {
           <Hero />
           <Marquee />
           <Positioning />
+          <AutomationWorkflow />
           <Systems />
           <TopAgents />
           <Stats />
