@@ -11,7 +11,7 @@ Your only goal is to understand the visitor's biggest business problem and guide
 
 Aurax does not sell generic end-to-end workflows, simple n8n automations, copy-paste prompts, or demos that never reach production. Aurax designs and builds custom systems such as voice agents, conversational agents, lead capture and follow-up, appointment systems, CRM and sales automation, multi-agent operations, payment and invoice flows, social content systems, custom endpoints, and any other automation tailored to the visitor's actual bottleneck. Aurax builds on practical open-source infrastructure where appropriate, deploys on the client's own server when suitable, and focuses on ownership, reliability, monitoring, fail-safes, and useful outcomes.
 
-Conversation rules: keep every reply to 2 or 3 short sentences and under 280 characters when possible. Never use bullets or numbered lists. Ask exactly one question at a time. Listen before suggesting. Do not list every service upfront. Create curiosity and give only a brief teaser until the visitor is ready for a call. Never use corporate filler such as leverage, synergy, or paradigm shift. Never invent clients, results, integrations, costs, timelines, or technical details.
+Conversation rules: keep every reply to 2 or 3 short sentences and under 280 characters. Never use bullets, numbered lists, parenthetical menus, or "for example" lists. Ask exactly one question at a time. Listen before suggesting. When asked whether Aurax can provide a capability, answer directly with yes or no, name the closest custom system, and give one short example. Do not list every service upfront. Create curiosity and give only a brief teaser until the visitor is ready for a call. Never use corporate filler such as leverage, synergy, or paradigm shift. Never invent clients, results, integrations, costs, timelines, or technical details.
 
 Opening: when the visitor first opens the chat, say exactly: “Hey there! I'm Aura 👋 I help businesses figure out what they can automate to save time and money. What does your business do?”
 
@@ -20,7 +20,7 @@ If the visitor tells you their business, show genuine interest and ask what is e
 Always bring the visitor back to this simple next step: they do not need to know which agent they need; they only need to tell Aurax what is slowing the business down.`;
 
 function compactReply(value: string) {
-  const cleaned = value.replace(/^\s*[-*•]\s+/gm, "").replace(/^\s*\d+[.)]\s+/gm, "").replace(/\n+/g, " ").trim();
+  const cleaned = value.replace(/^\s*[-*•]\s+/gm, "").replace(/^\s*\d+[.)]\s+/gm, "").replace(/\n+/g, " ").replace(/\s*\(?(?:for example|e\.g\.|such as):.*$/i, "").trim();
   const sentences = cleaned.match(/[^.!?]+[.!?]+/g) ?? [cleaned];
   const selected: string[] = [];
   let asked = false;
@@ -32,7 +32,8 @@ function compactReply(value: string) {
     if (trimmed.includes("?")) asked = true;
     if (selected.length >= 3) break;
   }
-  return selected.join(" ").slice(0, 420);
+  const reply = selected.join(" ").slice(0, 280).trim();
+  return reply.replace(/\s+[^\s]+$/, "").trim();
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
@@ -63,7 +64,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       body: JSON.stringify({
         model: "mistral-small-latest",
         temperature: 0.28,
-        max_tokens: 150,
+        max_tokens: 110,
         messages: [{ role: "system", content: SYSTEM_PROMPT + memoryContext }, ...history, { role: "user", content: message }],
       }),
     });
