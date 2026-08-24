@@ -78,6 +78,30 @@ exposed in the site's source**.
 
 ---
 
+## 4) Aura chatbot → Mistral
+
+The site includes a friendly Aura assistant and a secure Pages Function at
+`functions/api/chat.ts`. The browser calls `/api/chat`; the Mistral key never
+ships to the frontend. In Cloudflare Pages environment variables, add:
+
+- `MISTRAL_API_KEY` = your Mistral API key
+
+The function uses Mistral's `mistral-small-latest` model with a scoped Aurax
+sales-assistant prompt. If the key is not configured, the assistant still
+returns a helpful built-in response so the UI remains usable.
+
+## 5) Appointment requests → WhatsApp
+
+The build-call and message forms continue to deliver to Telegram and now also
+support an optional WhatsApp relay. Set the frontend build variable
+`VITE_WHATSAPP_PROXY` to a secure server-side webhook or WhatsApp Business
+relay that accepts `{ "to": "919123771413", "text": "..." }`. The destination
+is already set in the frontend helper as `+91 91237 71413`. Do not put a
+WhatsApp access token in the browser bundle. The direct WhatsApp link on the
+site remains available even when the relay is not configured.
+
+---
+
 ## Quick checks after deploy
 
 - Open the site, click **Send a message**, fill it, submit → you should get a
