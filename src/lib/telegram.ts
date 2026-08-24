@@ -21,6 +21,7 @@ const CHAT_ID = ENV.VITE_TELEGRAM_CHAT_ID ?? BRAND.telegramChat;
 
 /** If set, all messages are proxied through your Cloudflare Function (recommended). */
 const PROXY = ENV.VITE_TELEGRAM_PROXY ?? "";
+const WHATSAPP_PROXY = ENV.VITE_WHATSAPP_PROXY ?? "";
 
 export async function sendToTelegram(text: string): Promise<SendResult> {
   try {
@@ -55,6 +56,25 @@ export async function sendToTelegram(text: string): Promise<SendResult> {
       description?: string;
     };
     return { ok: !!data.ok, error: data.ok ? undefined : data.description };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
+
+/** Optional WhatsApp Business/webhook relay. Configure VITE_WHATSAPP_PROXY in production. */
+export async function sendToWhatsApp(text: string): Promise<SendResult> {
+  if (!WHATSAPP_PROXY) return { ok: false, error: "not-configured" };
+  try {
+    const res = await fetch(WHATSAPP_PROXY, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to: "919123771413",
+        text: text.replace(/<[^>]*>/g, ""),
+      }),
+    });
+    const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+    return { ok: !!data.ok, error: data.ok ? undefined : data.error ?? "whatsapp-error" };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
   }

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { BRAND } from "../data/content";
 import { ModalShell, useModal } from "../lib/ui";
-import { sendToTelegram, line, escapeHtml } from "../lib/telegram";
+import { sendToTelegram, sendToWhatsApp, line, escapeHtml } from "../lib/telegram";
 import { Icon } from "./Icons";
 
 /* ---------- shared field styling (fat) ---------- */
@@ -252,9 +252,12 @@ function MessageModal({ preset, onClose }: { preset: string; onClose: () => void
       `${line("🏷 Interest:", type)}\n` +
       (contact.trim() ? `${line("✉️ Contact:", contact.trim())}\n` : "") +
       `\n💬 <b>Brief:</b>\n${escapeHtml(message.trim())}`;
-    const r = await sendToTelegram(text);
-    setError(r.error);
-    setResult(r.ok ? "sent" : "error");
+    const [telegramResult, whatsappResult] = await Promise.all([
+      sendToTelegram(text),
+      sendToWhatsApp(text),
+    ]);
+    setError(telegramResult.error ?? whatsappResult.error);
+    setResult(telegramResult.ok || whatsappResult.ok ? "sent" : "error");
   }
 
   return (
@@ -357,9 +360,12 @@ function CallModal({ preset, onClose }: { preset: string; onClose: () => void })
       `${line("🗓 Date:", date)}\n` +
       `${line("⏰ Time:", slot)}` +
       (details.trim() ? `\n${line("📝 Project:", details.trim())}` : "");
-    const r = await sendToTelegram(text);
-    setError(r.error);
-    setResult(r.ok ? "sent" : "error");
+    const [telegramResult, whatsappResult] = await Promise.all([
+      sendToTelegram(text),
+      sendToWhatsApp(text),
+    ]);
+    setError(telegramResult.error ?? whatsappResult.error);
+    setResult(telegramResult.ok || whatsappResult.ok ? "sent" : "error");
   }
 
   return (
