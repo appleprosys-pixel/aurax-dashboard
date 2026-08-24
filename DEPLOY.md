@@ -78,17 +78,9 @@ exposed in the site's source**.
 
 ---
 
-## 4) Aura chatbot → Mistral
+## 4) Public site experience
 
-The site includes a friendly Aura assistant and a secure Pages Function at
-`functions/api/chat.ts`. The browser calls `/api/chat`; the Mistral key never
-ships to the frontend. In Cloudflare Pages environment variables, add:
-
-- `MISTRAL_API_KEY` = your Mistral API key
-
-The function uses Mistral's `mistral-small-latest` model with a scoped Aurax
-sales-assistant prompt. If the key is not configured, the assistant still
-returns a helpful built-in response so the UI remains usable.
+The public site is intentionally static and does not include a chatbot or browser-side AI API integration. Workflow visuals are rendered as responsive SVG graphs so their nodes and connections remain visible as the viewport narrows.
 
 ## 5) Appointment requests → WhatsApp
 
