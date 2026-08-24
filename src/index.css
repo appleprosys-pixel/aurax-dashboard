@@ -126,7 +126,7 @@ button { font: inherit; }
 .workflow-shell-head, .workflow-shell-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 19px 22px; border-bottom: 1px solid rgba(255,255,255,.1); }
 .workflow-shell-foot { border-top: 1px solid rgba(255,255,255,.1); border-bottom: 0; }
 .workflow-run-state { display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,.45); font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
-.workflow-canvas-wrap { overflow-x: auto; }
+.workflow-canvas-wrap { overflow: hidden; width: 100%; }
 .workflow-canvas { position: relative; min-width: 1030px; height: 390px; background: radial-gradient(circle at 62% 50%, rgba(47,66,102,.19), transparent 37%), #0b0d11; }
 .workflow-stars { position: absolute; inset: 0; opacity: .36; background-image: radial-gradient(circle, rgba(255,255,255,.55) 0 1px, transparent 1.4px); background-size: 86px 86px; }
 .workflow-svg { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; overflow: visible; }
@@ -220,7 +220,7 @@ button { font: inherit; }
   .hero-signal-foot { gap: 9px; font-size: 7px; }
   .chip-label { font-size: 10px; }
   .workflow-shell-head, .workflow-shell-foot { align-items: flex-start; flex-direction: column; }
-  .workflow-canvas { height: 360px; }
+  .workflow-canvas { height: 390px; transform-origin: top left; }
   .contact-room { padding: 24px; }
   .agent-room-body { min-height: 440px; padding: 24px; }
   .price-room { min-height: 0; }
@@ -237,3 +237,10 @@ button { font: inherit; }
 .intro-mode-active { color: #07080c; background: var(--acid); }
 .intro-mode-active small { color: rgba(7,8,12,.62); }
 @media (max-width: 560px) { .intro-mode-picker { grid-template-columns: 1fr; } .intro-mode { min-height: 48px; } }
+
+.review-pill { display: flex; min-width: 310px; max-width: 430px; flex-direction: column; gap: 10px; }
+.review-stars { color: #b6d735; font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; }
+.review-stars b { color: inherit; font-weight: 500; letter-spacing: 0; }
+.review-copy { display: block; }
+.review-pill small { color: rgba(255,255,255,.4); font-family: var(--font-mono); font-size: 8px; letter-spacing: .09em; line-height: 1.4; text-transform: uppercase; }
+.review-pill-light small { color: rgba(7,8,12,.45); }
